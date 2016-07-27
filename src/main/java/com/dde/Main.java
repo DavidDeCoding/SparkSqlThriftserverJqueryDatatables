@@ -22,7 +22,7 @@ public class Main
 		bootstrap();
 
 		get("/", (req, res) -> new ModelAndView(getHome(), "home.hbs"), new HandlebarsTemplateEngine());
-		get("/data", (req, res) -> data(req.body()));
+		get("/data", (req, res) -> { res.type("application/json"); return data(req.body()); });
 		get("/allcountries", (req, res) -> { res.type("application/json"); return countries(); });
 		get("/allcities", (req, res) -> { res.type("application/json"); return cities(req.queryParams("term")); });
 	}
@@ -61,8 +61,8 @@ public class Main
 		Map<String, Object> temp = new HashMap<>();
 		List<Object> data = new ArrayList<>();
 
-		ResultSet rs = Connect.getInstance().getBy("country");
-		while (rs.next()) data.add(Arrays.asList(new Object[] {rs.getString("country"), rs.getString("city"), rs.getFloat("average_temperature")}));
+		ResultSet rs = Connect.getInstance().getBy("India");
+		while (rs.next()) data.add(Arrays.asList(new Object[] {rs.getFloat("average_temperature"), rs.getDate("date"), rs.getString("city"), rs.getString("country")}));
 
 		temp.put("data", data);
 		return dataToJson(temp);

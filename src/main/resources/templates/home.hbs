@@ -48,7 +48,6 @@
                 });
                 $('#datatable').DataTable({
 					processing: true,
-					serverSide: true,
 					ajax: '/data'
 				});
             } );
@@ -63,12 +62,13 @@
         </div>
         <hr/>
         <div>
-            <table id="datatable">
+            <table id="datatable" class="table table-striped table-bordered">
                 <thead>
                     <tr>
-                        <th>County</th>
-                        <th>City</th>
                         <th>Average Temperature</th>
+                        <th>Date</th>
+                        <th>City</th>
+                        <th>County</th>
                     </tr>
                 </thead>
                 <tbody>

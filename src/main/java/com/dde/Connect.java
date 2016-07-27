@@ -41,11 +41,11 @@ public class Connect
 
 	public ResultSet getBy(String country) throws Exception
 	{
-		return execute("SELECT country, city, average_temperature FROM g_weather WHERE country = " + country + "'");
+		return execute("SELECT DISTINCT country, city, average_temperature, date FROM g_weather WHERE country = '" + country + "' LIMIT 200");
 	}
 
 	public ResultSet getBy(String country, String city) throws Exception
 	{
-		return execute("SELECT country, city, average_temperature FROM g_weather WHERE country = '" + country + "' AND city = '" + city + "'");
+		return execute("SELECT DISTINCT country, city, average_temperature, date FROM g_weather WHERE country = '" + country + "' AND city = '" + city + "' LIMIT 200");
 	}
 }
