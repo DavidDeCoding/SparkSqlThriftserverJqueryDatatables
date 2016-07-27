@@ -3,9 +3,49 @@
 		<title>This is the title</title>
 		<script type="text/javascript" charset="utf8" src="//code.jquery.com/jquery-1.12.0.min.js"></script>
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/t/bs-3.3.6/dt-1.10.11/datatables.min.css"/>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
         <script type="text/javascript" src="https://cdn.datatables.net/t/bs-3.3.6/dt-1.10.11/datatables.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+        <style>
+            body {
+                width: 80%;
+                margin: 0 auto;
+            }
+        </style>
 		<script>
 			$(document).ready(function() {
+			    $(".country_selection").select2({
+                    ajax: {
+                        url: "/allcountries",
+                        data: function(params) {
+                            var query = {
+                                term: params.term,
+                                page: params.page
+                            }
+                            return query;
+                        },
+                        delay: 250
+                    },
+                    allowClear: true,
+                    placeholder: "Select a value",
+                    dataType: 'json'
+                });
+                $(".city_selection").select2({
+                    ajax: {
+                        url: "/allcities",
+                        data: function(params) {
+                            var query = {
+                                term: params.term,
+                                page: params.page
+                            }
+                            return query;
+                        },
+                        delay: 250
+                    },
+                    allowClear: true,
+                    placeholder: "Select a value",
+                    dataType: 'json'
+                });
                 $('#datatable').DataTable({
 					processing: true,
 					serverSide: true,
@@ -15,15 +55,25 @@
 		</script>
 	</head>
 	<body>
-		<table id="datatable">
-            <thead>
-                <tr>
-                    <th>City</th>
-                    <th>Temp</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+        <div>
+            <label for="country">Country</label>
+            <select id="country" class="country_selection select2-input select2" style="width:100%"></select>
+            <label for="city">City</label>
+            <select id="city" class="city_selection select2-input select2" style="width:100%"></select>
+        </div>
+        <hr/>
+        <div>
+            <table id="datatable">
+                <thead>
+                    <tr>
+                        <th>County</th>
+                        <th>City</th>
+                        <th>Average Temperature</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
 	</body>
 </html>
