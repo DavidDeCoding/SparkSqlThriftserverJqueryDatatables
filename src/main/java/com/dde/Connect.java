@@ -2,6 +2,8 @@ package com.dde;
 
 import javax.xml.transform.Result;
 import java.sql.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Connect
 {
@@ -44,8 +46,9 @@ public class Connect
 		return execute("SELECT DISTINCT country, city, average_temperature, date FROM g_weather WHERE country = '" + country + "' LIMIT 200");
 	}
 
-	public ResultSet getBy(String country, String city) throws Exception
+	public ResultSet getBy(String country, List<String> listOfcities) throws Exception
 	{
-		return execute("SELECT DISTINCT country, city, average_temperature, date FROM g_weather WHERE country = '" + country + "' AND city = '" + city + "' LIMIT 200");
+		String cities = listOfcities.stream().map( city -> "'" + city + "'" ).collect(Collectors.joining(","));
+		return execute("SELECT DISTINCT country, city, average_temperature, date FROM g_weather WHERE country = '" + country + "' AND city IN (" + cities + ") LIMIT 200");
 	}
 }
