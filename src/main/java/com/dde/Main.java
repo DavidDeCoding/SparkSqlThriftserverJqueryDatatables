@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.sql.ResultSet;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Main
 {
@@ -22,8 +23,8 @@ public class Main
 
 		get("/", (req, res) -> new ModelAndView(getHome(), "home.hbs"), new HandlebarsTemplateEngine());
 		get("/data", (req, res) -> data(req.body()));
-		get("/countries", (req, res) -> countries());
-		get("/cities", (req, res) -> cities(req.body()));
+		get("/allcountries", (req, res) -> { res.type("application/json"); return countries(); });
+		get("/allcities", (req, res) -> { res.type("application/json"); return cities(req.queryParams("term")); });
 	}
 
 	static void bootstrap() throws Exception
@@ -39,18 +40,20 @@ public class Main
 	}
 
 
-	static Map<String, Object> countries() throws Exception
+	static String countries() throws Exception
 	{
 		Map<String, Object> countries = new HashMap<>();
-		countries.put("data", LocalDB.getInstance().findAllCountries());
-		return countries;
+		countries.put("results", LocalDB.getInstance().findAllCountries().stream().map(country -> filterMap(country)).collect(Collectors.toList()));
+		return dataToJson(countries);
 	}
 
-	static Map<String, Object> cities(String body) throws Exception
+	static String cities(String country) throws Exception
 	{
+		if (country == null || country.isEmpty()) return "";
+
 		Map<String, Object> cities = new HashMap<>();
-		cities.put("data", LocalDB.getInstance().findCities(body));
-		return cities;
+		cities.put("results", LocalDB.getInstance().findCities(country).stream().map(city -> filterMap(city)).collect(Collectors.toList()));
+		return dataToJson(cities);
 	}
 
 	static String data(String body) throws Exception
@@ -76,5 +79,13 @@ public class Main
         } catch (IOException e){
             throw new RuntimeException("IOException from a StringWriter?");
         }
+	}
+
+	static Map<String, String> filterMap(String data)
+	{
+		Map<String, String> m = new HashMap<>();
+		m.put("id", data);
+		m.put("text", data);
+		return m;
 	}
 }

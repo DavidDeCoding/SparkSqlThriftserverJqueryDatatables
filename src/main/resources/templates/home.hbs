@@ -35,7 +35,7 @@
                         url: "/allcities",
                         data: function(params) {
                             var query = {
-                                term: params.term,
+                                term: $("#country").select2("val"),
                                 page: params.page
                             }
                             return query;
