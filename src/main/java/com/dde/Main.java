@@ -16,12 +16,19 @@ import java.util.*;
 public class Main
 {
 	
-	public static void main(String[] args)
+	public static void main(String[] args) throws Exception
 	{
+		bootstrap();
+
 		get("/", (req, res) -> new ModelAndView(getHome(), "home.hbs"), new HandlebarsTemplateEngine());
 		get("/data", (req, res) -> data(req.body()));
 		get("/countries", (req, res) -> countries());
 		get("/cities", (req, res) -> cities(req.body()));
+	}
+
+	static void bootstrap() throws Exception
+	{
+		LocalDB.getInstance().populateCountriesAndCities();
 	}
 	
 	static Map<String, Object> getHome()
