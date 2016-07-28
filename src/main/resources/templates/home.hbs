@@ -6,6 +6,9 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
         <script type="text/javascript" src="https://cdn.datatables.net/t/bs-3.3.6/dt-1.10.11/datatables.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.1/js/dataTables.buttons.min.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.1/js/buttons.bootstrap.min.js"></script>
+        <link href="https://cdn.datatables.net/buttons/1.2.1/css/buttons.bootstrap.min.css" rel="stylesheet"/>
         <style>
             body {
                 width: 80%;
@@ -46,9 +49,31 @@
                     placeholder: "Select a value",
                     dataType: 'json'
                 });
-                $('#datatable').DataTable({
+                var $table = $('#datatable').DataTable({
 					processing: true,
-					ajax: '/data'
+					ajax: {
+                        url: '/data',
+                        type: 'POST',
+                        data: function(d) {
+                            return JSON.stringify({
+                                country: $("#country").val(),
+                                city: $("#city").val()
+                            });
+                        }
+                    },
+                    dom: 'Bfrtip',
+                    buttons: [
+                        {
+                            text: 'Search',
+                            action: function() {
+                                $table.ajax.reload();
+                            }
+                        }
+                    ]
+				});
+
+				$("#country").on("change", function(evt) {
+				    $("#city").val('').trigger('change');
 				});
             } );
 		</script>

@@ -22,7 +22,7 @@ public class Main
 		bootstrap();
 
 		get("/", (req, res) -> new ModelAndView(getHome(), "home.hbs"), new HandlebarsTemplateEngine());
-		get("/data", (req, res) -> { res.type("application/json"); return data(req.body()); });
+		post("/data", (req, res) -> { res.type("application/json"); return data(req.body()); });
 		get("/allcountries", (req, res) -> { res.type("application/json"); return countries(); });
 		get("/allcities", (req, res) -> { res.type("application/json"); return cities(req.queryParams("term")); });
 	}
@@ -58,14 +58,20 @@ public class Main
 
 	static String data(String body) throws Exception
 	{
+		Map<String, Object> req = jsonToData(body);
 		Map<String, Object> temp = new HashMap<>();
 		List<Object> data = new ArrayList<>();
-
-		ResultSet rs = Connect.getInstance().getBy("India");
-		while (rs.next()) data.add(Arrays.asList(new Object[] {rs.getFloat("average_temperature"), rs.getDate("date"), rs.getString("city"), rs.getString("country")}));
-
 		temp.put("data", data);
-		return dataToJson(temp);
+
+		if (req.get("country") == null) return dataToJson(temp);
+		else
+		{
+			ResultSet rs = null;
+			if (req.get("city") == null) rs = Connect.getInstance().getBy((String) req.get("country"));
+			else rs = Connect.getInstance().getBy((String) req.get("country"), (String) req.get("city"));
+			while (rs.next()) data.add(Arrays.asList(new Object[]{rs.getFloat("average_temperature"), rs.getDate("date"), rs.getString("city"), rs.getString("country")}));
+			return dataToJson(temp);
+		}
 	}
 	
 	static String dataToJson(Map<String, Object> object)
@@ -79,6 +85,19 @@ public class Main
         } catch (IOException e){
             throw new RuntimeException("IOException from a StringWriter?");
         }
+	}
+
+	static Map<String, Object> jsonToData(String json)
+	{
+		try
+		{
+			ObjectMapper mapper = new ObjectMapper();
+			return mapper.readValue(json, Map.class);
+		}
+		catch (IOException e)
+		{
+			throw new RuntimeException("Cannot parse data");
+		}
 	}
 
 	static Map<String, String> filterMap(String data)
